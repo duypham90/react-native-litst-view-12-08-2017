@@ -4,7 +4,7 @@ class Rank extends Component {
     render() {
         return (
             <View style={styles.containDemo}>
-                <Text style={styles.cssText}>BANgr Xeeps hang</Text>
+                <Text style={styles.cssText}>Bảng Xếp Hạng</Text>
             </View>
         );
     }
