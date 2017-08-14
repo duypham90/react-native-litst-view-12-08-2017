@@ -1,29 +1,29 @@
 import React, { Component } from 'react';
 import { View,Text, FlatList, StyleSheet, ActivityIndicator, Image } from 'react-native';
-import ViewCosplay from './ViewCosplay';
+import ViewItem from './ViewItem';
 class Main extends Component {
     constructor(props){
         super(props);
         this.state = {
-            arrCosPlay: [],
+            arrNews: [],
             isLoading: false,
             offset: 0,
             limit: 10,
             error: false,
             refresh: false,
-            page: 1,
+            page: 1
         }
     }
     componentDidMount(){
-        const { offset, limit, page } = this.state;
-        const URL = `http://tinanime.com/api/genres/cosplay/news`;     
-        //const URL = `http://tinanime.com/api/news?offset=${offset}&limit=${limit}`;
+        const { offset, limit,page } = this.state;
+        //const URL = `http://tinanime.com/api/genres/tin-tuc-anime/news/?p=2`
+        const URL = 'http://tinanime.com/api/genres/tin-tuc-anime/news';
         this.setState({ ...this.state, refresh: true });
         fetch(URL)
         .then(res => res.json())
         .then(resJson => {
             this.setState({
-                arrCosPlay: resJson.data,
+                arrNews: resJson.data,
                 refresh: false,
             })
         })
@@ -41,12 +41,12 @@ class Main extends Component {
         this.setState({
             refresh: true
         });
-        fetch('http://tinanime.com/api/genres/cosplay/news')
+        fetch('http://tinanime.com/api/genres/tin-tuc-anime/news')
         .then(res => res.json())
         .then(resJson => {
             this.setState({
                 ...this.state,
-                arrCosPlay: resJson.data,
+                arrNews: resJson.data,
                 refresh: false
             })
         })
@@ -59,11 +59,11 @@ class Main extends Component {
             ...this.state, page: this.state.page + 1, isLoading: true 
         }, () => {
             setTimeout(() => {
-                fetch(`http://tinanime.com/api/genres/cosplay/news/?p=${this.state.page}`)
+                fetch(`http://tinanime.com/api/genres/tin-tuc-anime/news/?p=${this.state.page}`)
                 .then(res => res.json())
                 .then(resJson => {
                     this.setState({
-                            arrCosPlay: this.state.arrCosPlay.concat(resJson.data),
+                            arrNews: this.state.arrNews.concat(resJson.data),
                             isLoading: false
                     });
                 })
@@ -72,7 +72,7 @@ class Main extends Component {
         });
     }
     render() {
-        const { arrCosPlay, refresh } = this.state;
+        const { arrNews, refresh } = this.state;
         return (
             <View style={styles.container}>
                 <FlatList 
@@ -80,10 +80,10 @@ class Main extends Component {
                  onRefresh={() => this.refreshNew()} // lấy tin tức mới nhất khi Pull to Refresh.
                  onEndReachedThreshold="0.5" // vị trí item cuối khi vượt màn hình sẽ load more
                  onEndReached={() => this.loadMoreNew()}
-                 data={arrCosPlay}             
+                 data={arrNews}             
                  keyExtractor={item => item.id}
                  renderItem={({item}) =>
-                    <ViewCosplay item = {item} />
+                    <ViewItem item = {item} />
                  }
                 ListFooterComponent = {this.renderFooter}
                 />
