@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, PureComponent  } from 'react';
 import { View,Text, FlatList, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import ViewCosplay from './ViewCosplay';
-class Main extends Component {
+class Main extends PureComponent  {
     constructor(props){
         super(props);
         this.state = {
@@ -15,20 +15,42 @@ class Main extends Component {
         }
     }
     componentDidMount(){
-        const { offset, limit, page } = this.state;
-        const URL = `http://tinanime.com/api/genres/cosplay/news`;     
-        //const URL = `http://tinanime.com/api/news?offset=${offset}&limit=${limit}`;
-        this.setState({ ...this.state, refresh: true });
+        this.setState((prevState) => ({ ...prevState, refresh: true }));
+        this.makeRequest();
+    };
+    refreshNew() {
+        this.setState({
+            page: 1,
+            refresh: true
+        }, () => {
+                this.makeRequest();
+            }
+        );
+    };
+    makeRequest = () => {
+        const { page } = this.state;
+        const URL = `http://tinanime.com/api/genres/cosplay/news/?p=${page}`;
         fetch(URL)
         .then(res => res.json())
         .then(resJson => {
             this.setState({
-                arrCosPlay: resJson.data,
+                arrCosPlay: page === 1 ? resJson.data : [...this.state.arrCosPlay, ...resJson.data],
+                isLoading: false,
                 refresh: false,
-            })
+                error: null
+                
+            });
         })
-        .catch(err => this.setState({ ...this.state, refresh: false, error: true }));
-    }
+        .catch(e => this.setState({ isLoading: false, }))
+    };
+    handleLoadMore () {
+        this.setState({
+            ...this.state, page: this.state.page + 1, isLoading: true 
+        }, () => {
+              this.makeRequest();
+            }
+        );
+    };
     renderFooter = () => {
         if (!this.state.isLoading) return null;
         return (
@@ -37,40 +59,7 @@ class Main extends Component {
             </View>
         );
     };
-    refreshNew(){
-        this.setState({
-            refresh: true
-        });
-        fetch('http://tinanime.com/api/genres/cosplay/news')
-        .then(res => res.json())
-        .then(resJson => {
-            this.setState({
-                ...this.state,
-                arrCosPlay: resJson.data,
-                refresh: false
-            })
-        })
-        .catch(e => {
-            this.setState({ ...this.state, refresh: false, error: true})
-        })
-    }
-    loadMoreNew(){
-        this.setState({
-            ...this.state, page: this.state.page + 1, isLoading: true 
-        }, () => {
-            setTimeout(() => {
-                fetch(`http://tinanime.com/api/genres/cosplay/news/?p=${this.state.page}`)
-                .then(res => res.json())
-                .then(resJson => {
-                    this.setState({
-                            arrCosPlay: this.state.arrCosPlay.concat(resJson.data),
-                            isLoading: false
-                    });
-                })
-                .catch(e => this.setState({ isLoading: false, }))
-            }, 1500);      
-        });
-    }
+
     render() {
         const { arrCosPlay, refresh } = this.state;
         return (
@@ -78,8 +67,8 @@ class Main extends Component {
                 <FlatList 
                  refreshing={refresh}
                  onRefresh={() => this.refreshNew()} // lấy tin tức mới nhất khi Pull to Refresh.
-                 onEndReachedThreshold="0.5" // vị trí item cuối khi vượt màn hình sẽ load more
-                 onEndReached={() => this.loadMoreNew()}
+                 onEndReachedThreshold={0.5}
+                 onEndReached={() => this.handleLoadMore()}
                  data={arrCosPlay}             
                  keyExtractor={item => item.id}
                  renderItem={({item}) =>
