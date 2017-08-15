@@ -20,17 +20,30 @@ const Router = TabNavigator({
     },
     Notify: {
         screen: Notify,
+        navigationOptions: {
+           headerMode: 'none'
+        },
+        tabBarOptions: {
+            showLabel : false
+        },
     },
 }, {
+    navigationOptions: {
+        tabBarVisible: true
+    },
+    tabBarPosition: 'bottom',
     tabBarOptions: {
         activeTintColor: '#e91e63',
         inactiveTintColor: 'green',       
         labelStyle: {
-            fontSize: 12,
+            fontSize: 10,
+            margin: 0
         },
         style: {
             backgroundColor: '#eee',
         },
+        showIcon: true,
+        showLabel : true
     },
 });
 

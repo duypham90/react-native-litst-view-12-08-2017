@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 class Rank extends Component {
+    static navigationOptions = {
+        tabBarIcon: ({ tintColor }) => (
+        <Image
+            source={require('../icon/increase.png')}
+            style={[styles.icon, {tintColor: tintColor}]}
+        />
+        ),
+    };
     render() {
         return (
             <View style={styles.containDemo}>
@@ -19,7 +27,11 @@ const styles =  StyleSheet.create({
         color: '#00a920',
         padding: 10,
         fontSize: 18
-    }
+    },
+    icon: {
+        width: 26,
+        height: 26,
+    },
 });
 
 export default Rank;

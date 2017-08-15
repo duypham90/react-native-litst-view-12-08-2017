@@ -2,6 +2,14 @@ import React, { Component } from 'react';
 import { View,Text, FlatList, StyleSheet, ActivityIndicator, Image } from 'react-native';
 import ViewItem from './ViewItem';
 class Main extends Component {
+    static navigationOptions = {
+        tabBarIcon: ({ tintColor }) => (
+        <Image
+            source={require('../icon/magazine.png')}
+            style={[styles.icon, {tintColor: tintColor}]}
+        />
+        ),
+    };
     constructor(props){
         super(props);
         this.state = {
@@ -90,6 +98,10 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         padding: 8
+    },
+    icon: {
+        width: 26,
+        height: 26,
     },
 })
 export default Main;
